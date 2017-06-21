@@ -1,4 +1,4 @@
-
+import os
 import requests
 import json
 import smtplib
@@ -6,7 +6,11 @@ import time
 
 from email.mime.text import MIMEText
 
-from secrets import api_key, wunderground_key, long_lat, email_address, password
+api_key = os.environ['WUNDERGROUND_API_KEY']
+wunderground_key = os.environ['WUNDERGROUND_KEY']
+long_lat = os.environ['LONG_LAT']
+email_address = os.environ['WINDOW_EMAIL_ADDRESS']
+password = os.environ['WINDOW_EMAIL_PASSWORD']
 
 primed = None
 last_temp = None
