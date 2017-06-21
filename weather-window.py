@@ -63,7 +63,7 @@ while True:
             print "It's safe to have the window open."
             primed = False
             send_mail(mesg, email_address, subject_tag + "It's not that hot")
-    elif ( primed and ( current_temp > threshold ) ):
+    elif ( primed and ( current_temp < threshold ) ):
         mesg = "Temperature dropped to %1.1f. Open the window!" % current_temp
         primed = False
         send_mail(mesg, email_address, subject_tag + 'Time to open the window!')
