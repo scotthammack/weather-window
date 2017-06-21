@@ -80,13 +80,14 @@ while True:
         was_rising = True
     elif ( delta < -0.1 ):
         if was_rising:
-            mesg = "Relief is in sight... the temperature has started dropping. Currently %1.1f (a decrease of %1.1f." % (current_temp, delta)
+            mesg = "Relief is in sight... the temperature has started dropping. Currently %1.1f (a decrease of %1.1f)." % (current_temp, delta * -1)
             send_mail(mesg, email_address, subject_tag + 'Good news!')
         else:
             mesg = "Temperature dropped by %1.1 to %1.1f." % (delta, current_temp)
         was_rising = False
     else:
-        be_quiet = True
+        print timestamp + "Delta: %1.1f. Current temp: %1.1f" % (delta, current_temp)
+#       be_quiet = True
 
     if not be_quiet:
         mesg = timestamp + mesg
