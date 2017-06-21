@@ -29,6 +29,7 @@ def send_mail(mesg, recipient, subj):
     s.sendmail(email_address, recipient, mesg.as_string())
     s.quit()
 
+was_rising = True
 
 while True:
     be_quiet = False
@@ -69,9 +70,19 @@ while True:
         primed = True
         send_mail(mesg, email_address, 'Time to close the window!')
     elif ( current_temp - last_temp > 0.1 ):
-        mesg = "Temperature rose to %1.1f." % current_temp
+        if not was_rising:
+            mesg = "WARNING! Temperature has started rising! Currently %1.1f." % current_temp
+            send_mail(mesg, email_address, 'Heat rising!')
+        else:
+            mesg = "Temperature rose to %1.1f." % current_temp
+        was_rising = True
     elif ( current_temp - last_temp < -0.1 ):
-        mesg = "Temperature dropped to %1.1f." % current_temp
+        if was_rising:
+            mesg = "Relief is in sight... the temperature has started dropping. Currently %1.1f." % current_temp
+            send_mail(mesg, email_address, 'Good news!')
+        else:
+            mesg = "Temperature dropped to %1.1f." % current_temp
+        was_rising = False
     else:
         be_quiet = True
 
