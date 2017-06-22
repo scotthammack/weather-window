@@ -92,7 +92,7 @@ while True:
 			mesg = "Temperature dropped by %1.1f to %1.1f." % (delta * -1, current_temp)
 		was_rising = False
 	else:
-		print timestamp + "Delta: %1.1f. Current temp: %1.1f" % (delta, current_temp)
+#		print timestamp + "Delta: %1.1f. Current temp: %1.1f" % (delta, current_temp)
 		be_quiet = True
 
 	if not be_quiet:
