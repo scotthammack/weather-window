@@ -25,7 +25,7 @@ was_rising = True
 
 def send_mail(mesg, recipient, subj):
 	mesg = MIMEText(mesg)
-	mesg['Subject'] = subj
+	mesg['Subject'] = SUBJECT_TAG + subj
 	mesg['To'] = recipient
 
 	s = smtplib.SMTP(MAIL_SERVER)
@@ -61,25 +61,25 @@ while True:
 			print "It's too hot to have the window open."
 			primed = True
 			if NOISY_EMAILS:
-				send_mail(mesg, EMAIL_ADDRESS, SUBJECT_TAG + "It's hot")
+				send_mail(mesg, EMAIL_ADDRESS, "It's hot")
 		else:
 			print "It's safe to have the window open."
 			primed = False
 			if NOISY_EMAILS:
-				send_mail(mesg, EMAIL_ADDRESS, SUBJECT_TAG + "It's not that hot")
+				send_mail(mesg, EMAIL_ADDRESS, "It's not that hot")
 	elif ( primed and ( current_temp < THRESHOLD ) ):
 		mesg = "Temperature dropped to %1.1f. Open the window!" % current_temp
 		primed = False
-		send_mail(mesg, EMAIL_ADDRESS, SUBJECT_TAG + 'Time to open the window!')
+		send_mail(mesg, EMAIL_ADDRESS, 'Time to open the window!')
 	elif ( not primed and ( current_temp > THRESHOLD ) ):
 		mesg = "Temperature rose to %1.1f. Close the window!" % current_temp
 		primed = True
-		send_mail(mesg, EMAIL_ADDRESS, SUBJECT_TAG + 'Time to close the window!')
+		send_mail(mesg, EMAIL_ADDRESS, 'Time to close the window!')
 	elif ( delta > DELTA_THRESHOLD ):
 		if not was_rising:
 			mesg = "WARNING! Temperature has started rising! Currently %1.1f (an increase of %1.1f)." % (current_temp, delta)
 			if NOISY_EMAILS:
-				send_mail(mesg, EMAIL_ADDRESS, SUBJECT_TAG + 'Heat rising!')
+				send_mail(mesg, EMAIL_ADDRESS, 'Heat rising!')
 		else:
 			mesg = "Temperature rose by %1.1f to %1.1f." % (delta, current_temp)
 		was_rising = True
@@ -87,7 +87,7 @@ while True:
 		if was_rising:
 			mesg = "Relief is in sight... the temperature has started dropping. Currently %1.1f (a decrease of %1.1f)." % (current_temp, delta * -1)
 			if NOISY_EMAILS:
-				send_mail(mesg, EMAIL_ADDRESS, SUBJECT_TAG + 'Good news!')
+				send_mail(mesg, EMAIL_ADDRESS, 'Good news!')
 		else:
 			mesg = "Temperature dropped by %1.1f to %1.1f." % (delta * -1, current_temp)
 		was_rising = False
