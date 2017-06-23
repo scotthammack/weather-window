@@ -83,7 +83,7 @@ while True:
 		window_closed = True
 		send_mail(mesg, EMAIL_ADDRESS, 'Time to close the window!')
 	elif ( delta > DELTA_THRESHOLD ):
-		if not was_rising:
+		if not was_rising and current_temp < THRESHOLD:
 			mesg = "WARNING! Temperature has started rising! Currently %1.1f (an increase of %1.1f)." % (current_temp, delta)
 			if NOISY_EMAILS:
 				send_mail(mesg, EMAIL_ADDRESS, 'Heat rising!')
@@ -91,7 +91,7 @@ while True:
 			mesg = "Temperature rose by %1.1f to %1.1f." % (delta, current_temp)
 		was_rising = True
 	elif ( delta < (DELTA_THRESHOLD * -1) ):
-		if was_rising:
+		if was_rising and current_temp > THRESHOLD:
 			mesg = "Relief is in sight... the temperature has started dropping. Currently %1.1f (a decrease of %1.1f)." % (current_temp, delta * -1)
 			if NOISY_EMAILS:
 				send_mail(mesg, EMAIL_ADDRESS, 'Good news!')
