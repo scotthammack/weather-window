@@ -18,6 +18,7 @@ DELTA_THRESHOLD = 0.1
 SUBJECT_TAG = "[weather-window] "
 NOISY_EMAILS = False
 URL = 'http://api.wunderground.com/api/%s/conditions/forecast/q/%s.json' % ( WUNDERGROUND_KEY, LONG_LAT )
+INTERVAL = 300
 
 primed = None
 last_temp = None
@@ -28,33 +29,38 @@ def send_mail(mesg, recipient, subj):
 	mesg['Subject'] = SUBJECT_TAG + subj
 	mesg['To'] = recipient
 
-	s = smtplib.SMTP(MAIL_SERVER)
-	s.starttls()
-	s.login(EMAIL_ADDRESS, PASSWORD)
-	s.sendmail(EMAIL_ADDRESS, recipient, mesg.as_string())
-	s.quit()
+	try:
+		s = smtplib.SMTP(MAIL_SERVER)
+		s.starttls()
+		s.login(EMAIL_ADDRESS, PASSWORD)
+		s.sendmail(EMAIL_ADDRESS, recipient, mesg.as_string())
+		s.quit()
+	except:
+		raise
 
 while True:
 	be_quiet = False
+	current_time = time.localtime()
+	timestamp = time.strftime('%H:%M: ', current_time)
 
-	r = requests.get(URL)
-
-	if r.status_code != 200:
-		print "Bad status code: "
-		print r.status_code
-		time.sleep(300)
+	try:
+		r = requests.get(URL)
+		if r.status_code != 200:
+			raise Exception('Bad status code: ' + r.status_code)
+		try:
+			response = r.json()
+		except:
+			raise
+	except:
+		print timestamp + "Unexpected error: " + sys.exc_info()[0]
+		time.sleep(INTERVAL)
 		continue
 
-	response = r.json()
-
 	current_temp = float(response['current_observation']['temp_f'])
-	current_time = time.localtime()
 	if not last_temp:
 		last_temp = current_temp
 		mesg = "Current temperature is %1.1f." % current_temp
 	delta = current_temp - last_temp
-
-	timestamp = time.strftime('%H:%M: ', current_time)
 
 	if ( primed == None ):
 		if ( current_temp > THRESHOLD ):
@@ -101,4 +107,4 @@ while True:
 
 	last_temp = current_temp
 
-	time.sleep(300)
+	time.sleep(INTERVAL)
