@@ -60,7 +60,7 @@ while True:
 	current_temp = float(response['current_observation']['temp_f'])
 	if not last_temp:
 		last_temp = current_temp
-		mesg = "Current temperature is %1.2f." % current_temp
+		mesg = "Current temperature is %1.1f." % current_temp
 	delta = current_temp - last_temp
 
 	if ( window_closed == None ):
@@ -75,31 +75,31 @@ while True:
 			if NOISY_EMAILS:
 				send_mail(mesg, EMAIL_ADDRESS, "It's not that hot")
 	elif ( window_closed and ( current_temp < THRESHOLD ) ):
-		mesg = "Temperature dropped to %1.2f. Open the window!" % current_temp
+		mesg = "Temperature dropped to %1.1f. Open the window!" % current_temp
 		window_closed = False
 		send_mail(mesg, EMAIL_ADDRESS, 'Time to open the window!')
 	elif ( not window_closed and ( current_temp > THRESHOLD ) ):
-		mesg = "Temperature rose to %1.2f. Close the window!" % current_temp
+		mesg = "Temperature rose to %1.1f. Close the window!" % current_temp
 		window_closed = True
 		send_mail(mesg, EMAIL_ADDRESS, 'Time to close the window!')
 	elif ( delta > DELTA_THRESHOLD ):
 		if not was_rising:
-			mesg = "WARNING! Temperature has started rising! Currently %1.2f (an increase of %1.2f)." % (current_temp, delta)
+			mesg = "WARNING! Temperature has started rising! Currently %1.1f (an increase of %1.1f)." % (current_temp, delta)
 			if NOISY_EMAILS:
 				send_mail(mesg, EMAIL_ADDRESS, 'Heat rising!')
 		else:
-			mesg = "Temperature rose by %1.2f to %1.2f." % (delta, current_temp)
+			mesg = "Temperature rose by %1.1f to %1.1f." % (delta, current_temp)
 		was_rising = True
 	elif ( delta < (DELTA_THRESHOLD * -1) ):
 		if was_rising:
-			mesg = "Relief is in sight... the temperature has started dropping. Currently %1.2f (a decrease of %1.2f)." % (current_temp, delta * -1)
+			mesg = "Relief is in sight... the temperature has started dropping. Currently %1.1f (a decrease of %1.1f)." % (current_temp, delta * -1)
 			if NOISY_EMAILS:
 				send_mail(mesg, EMAIL_ADDRESS, 'Good news!')
 		else:
-			mesg = "Temperature dropped by %1.2f to %1.2f." % (delta * -1, current_temp)
+			mesg = "Temperature dropped by %1.1f to %1.1f." % (delta * -1, current_temp)
 		was_rising = False
 	else:
-#		print timestamp + "Delta: %1.2f. Current temp: %1.2f" % (delta, current_temp)
+#		print timestamp + "Delta: %1.1f. Current temp: %1.1f" % (delta, current_temp)
 		be_quiet = True
 
 	if not be_quiet:
