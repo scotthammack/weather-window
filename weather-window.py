@@ -24,6 +24,7 @@ INTERVAL = 300
 window_closed = None
 last_temp = None
 was_rising = True
+temps = []
 
 def send_mail(mesg, recipient, subj):
 	mesg = MIMEText(mesg)
@@ -39,6 +40,20 @@ def send_mail(mesg, recipient, subj):
 	except:
 		raise
 
+def compare_temps(temps, checking_high):
+	if len(temps) < 3:
+		return False
+
+	for temp in temps:
+		if checking_high:
+			if temp < THRESHOLD:
+				return False
+		else:
+			if temp > THRESHOLD:
+				return False
+
+	return True
+
 while True:
 	be_quiet = False
 	current_time = time.localtime()
@@ -53,7 +68,7 @@ while True:
 		except:
 			raise
 	except:
-		print timestamp + "Unexpected error: " + sys.exc_info()[0]
+		print( timestamp + "Unexpected error: ", sys.exc_info()[0] )
 		time.sleep(INTERVAL)
 		continue
 
@@ -61,6 +76,10 @@ while True:
 	if not last_temp:
 		last_temp = current_temp
 		mesg = "Current temperature is %1.1f." % current_temp
+	temps.append(current_temp)
+	while len(temps) > 3:
+		del temps[0]
+	print temps
 	delta = current_temp - last_temp
 
 	if ( window_closed == None ):
@@ -74,11 +93,11 @@ while True:
 			window_closed = False
 			if NOISY_EMAILS:
 				send_mail(mesg, EMAIL_ADDRESS, "It's not that hot")
-	elif ( window_closed and ( current_temp < THRESHOLD ) ):
+	elif ( window_closed and compare_temps(temps, False) ):
 		mesg = "Temperature dropped to %1.1f. Open the window!" % current_temp
 		window_closed = False
 		send_mail(mesg, EMAIL_ADDRESS, 'Time to open the window!')
-	elif ( not window_closed and ( current_temp > THRESHOLD ) ):
+	elif ( not window_closed and compare_temps(temps, True) ):
 		mesg = "Temperature rose to %1.1f. Close the window!" % current_temp
 		window_closed = True
 		send_mail(mesg, EMAIL_ADDRESS, 'Time to close the window!')
